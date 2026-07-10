@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: healthcare-appointment-backend
+  profiles:
+    active: dev
+  threads:
+    virtual:
+      enabled: true
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=30s
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-production-use-at-least-256-bit-secret-key-here}
+    access-token-expiration-ms: ${JWT_ACCESS_EXPIRATION_MS:900000}
+    refresh-token-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  cancellation:
+    window-hours: ${CANCELLATION_WINDOW_HOURS:2}
+  outbox:
+    poll-interval-ms: ${OUTBOX_POLL_INTERVAL_MS:2000}
+  kafka:
+    enabled: ${KAFKA_ENABLED:false}
+    topic:
+      appointment-booked: appointment.booked
+      appointment-cancelled: appointment.cancelled
+      appointment-rescheduled: appointment.rescheduled
+  idempotency:
+    ttl-hours: ${IDEMPOTENCY_TTL_HOURS:24}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

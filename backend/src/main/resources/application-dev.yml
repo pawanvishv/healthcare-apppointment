@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/appointments;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.healthapp.backend: DEBUG
+    org.hibernate.SQL: DEBUG
+
+app:
+  kafka:
+    enabled: false
